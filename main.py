@@ -1,6 +1,9 @@
 import pygame
 from constants import *
 from player import Player
+from asteroid import Asteroid
+from asteroidfield import AsteroidField
+from shot import Shot
 
 def main():
     pygame.init
@@ -11,10 +14,20 @@ def main():
 )
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
+
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     Player.containers = (updatable, drawable)
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+
+    asteroids = pygame.sprite.Group()
+    Asteroid.containers = (asteroids, updatable, drawable)
+    AsteroidField.containers = (updatable)
+
+    shots = pygame.sprite.Group()
+    Shot.containers = (shots, updatable, drawable)
+
+    asteroid_field = AsteroidField()
     dt = 0
 
 
@@ -31,6 +44,16 @@ def main():
         
         for obj in drawable:
             obj.draw(screen)
+
+        for asteroid in asteroids:
+            if asteroid.collides_with(player):
+                print("GAME OVER CRISTOFER!")
+                exit()
+
+            for shot in shots:
+                if shot.collides_with(asteroid):
+                    asteroid.split()
+            
 
         pygame.display.flip()
         
